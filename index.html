@@ -6,23 +6,111 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundation/4.3.2/css/normalize.min.css"/>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundation/4.3.2/css/foundation.min.css"/>
     <link rel="stylesheet" href="css/foundation-icons/foundation-icons.css" /> 
+    <link rel="stylesheet" href="css/app.css" /> 
   </head>
   <body>
     <div id="content"></div>
     <div><i class="fi-home"></i></div>
     <script type="text/jsx">
       /** @jsx React.DOM */
+      var Row = React.createClass({
+          render: function() {
+              var className = "row "
+                + (this.props.className || "");
+              return (
+                <div className={className}>
+                  {this.props.children}
+                </div>
+              );
+          }
+      });
+
+      var Column = React.createClass({
+          render: function() {
+              var span = this.props.span || 12;
+              var className= "small-" + span + " " 
+                + (this.props.className || "") 
+                + " columns";
+              return (
+                <div className={className}>
+                  {this.props.children}
+                </div>
+              );
+          }
+      });
+
+      var MovieDetail = React.createClass({
+          render: function() {
+              var className = "";
+              if (this.props.icon) {
+                  className = "fi-" + this.props.icon;
+              }
+              var space = " ";
+              return (
+                <span>
+                  <i className={className}></i> 
+                  {space}
+                  {this.props.children}
+                </span>
+              );
+          }
+      });
+
+      var MovieDetailRow = React.createClass({
+          render: function() {
+              return (
+                <Row><Column>
+                  <MovieDetail icon={this.props.icon}>
+                    {this.props.children}
+                  </MovieDetail>
+                </Column></Row>
+              );
+          }
+      });
+
       var MovieListItem = React.createClass({
           render: function() {
               var movie = this.props.movie;
+              var rating = Math.round(movie.otherRating * 10) / 10;
+              var releaseYear = movie.releaseDate.substr(0,4);
+              var genres = movie.genres.map(function(genre) {
+                  return genre.name;
+              }).join(", ");
+              var actors = movie.cast.slice(0,3).map(function(actor) {
+                  return actor.name;
+              }).join(", ");
+              var coverpic = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/w92/" 
+                    + movie.posterPath;
+
               return (
                 <li>
-                  <div>
-                    <span>Movie Item</span>
-                    <div className="small-12 large-9 push-3 columns">
-                    <span><i className="fi-monitor"></i> {movie.format}</span>
-                    </div>
-                  </div>
+                  <Row className="collapse display">
+                    <Column span="2">
+                       <img src={coverpic} /> 
+                    </Column>
+                    <Column span="10">
+                  <MovieDetailRow>{movie.name} ({releaseYear})</MovieDetailRow>
+                  <MovieDetailRow>{movie.tagline}</MovieDetailRow>
+                  <Row>
+                    <Column className="large-9 push-3">
+                      <MovieDetail icon="monitor">
+                        {movie.format}
+                      </MovieDetail>
+                    </Column>
+                    <Column className="large-3 pull-9">
+                      <MovieDetail icon="star">
+                        {rating}/10
+                      </MovieDetail>
+                    </Column>
+                  </Row>
+                  <MovieDetailRow icon="pricetag-multiple">
+                    {genres}
+                  </MovieDetailRow>
+                  <MovieDetailRow icon="torso">
+                    {actors}
+                  </MovieDetailRow>
+                    </Column>
+                  </Row>
                 </li>
               );
           }
@@ -34,13 +122,13 @@
                   return <MovieListItem movie={movie} />;
               });
               return (
-                <div className="row">
-                  <div className="small-12 columns">
+                <Row>
+                  <Column className="large-10 large-centered">
                     <ul className="no-bullet">
                       {movieNodes}
                     </ul>
-                  </div>
-                </div>
+                  </Column>
+                </Row>
               );
           }
       });
@@ -62,10 +150,13 @@
               $.ajax({
                   url: this.props.url,
                   success: function(data) {
-                      this.setState({data: data.docs});
+                      var movies = $.grep(data.docs, function(item, index) { 
+                          return item._id !== "config";
+                      });
+                      this.setState({data: movies});
                   }.bind(this)
               });
-              return {data: [{}]};
+              return {data: []};
           },
           render: function() {
               return (
