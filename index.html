@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.5.1/react.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.5.1/JSXTransformer.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundation/4.3.2/css/normalize.min.css"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundation/4.3.2/css/foundation.min.css"/>
+    <link rel="stylesheet" href="css/foundation-icons/foundation-icons.css" /> 
+  </head>
+  <body>
+    <div id="content"></div>
+    <div><i class="fi-home"></i></div>
+    <script type="text/jsx">
+      /** @jsx React.DOM */
+      var MovieListItem = React.createClass({
+          render: function() {
+              var movie = this.props.movie;
+              return (
+                <li>
+                  <div>
+                    <span>Movie Item</span>
+                    <div className="small-12 large-9 push-3 columns">
+                    <span><i className="fi-monitor"></i> {movie.format}</span>
+                    </div>
+                  </div>
+                </li>
+              );
+          }
+      });
+
+      var MoviesList = React.createClass({
+          render: function() {
+              var movieNodes = this.props.data.map(function(movie) {
+                  return <MovieListItem movie={movie} />;
+              });
+              return (
+                <div className="row">
+                  <div className="small-12 columns">
+                    <ul className="no-bullet">
+                      {movieNodes}
+                    </ul>
+                  </div>
+                </div>
+              );
+          }
+      });
+
+      var Title = React.createClass({
+          render: function() {
+              return (
+                <div className="row">
+                  <div className="small-12 columns">
+                    <h1>{this.props.children}</h1>
+                  </div>
+                </div>
+              );
+          }
+      });
+
+      var MoviesPage = React.createClass({
+          getInitialState: function() {
+              $.ajax({
+                  url: this.props.url,
+                  success: function(data) {
+                      this.setState({data: data.docs});
+                  }.bind(this)
+              });
+              return {data: [{}]};
+          },
+          render: function() {
+              return (
+                <div className="row">
+                  <div className="small-12 columns">
+                    <Title>Movie List</Title>
+                    <MoviesList data={this.state.data} />
+                  </div>
+                </div>
+              );
+          }
+      });
+
+      React.renderComponent(
+        <MoviesPage url="movies.json" />,
+        document.getElementById('content')
+      );
+
+    </script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/4.3.2/js/vendor/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/4.3.2/js/foundation.min.js"></script>
+
+    <script>
+      $(document).foundation();
+    </script>
+  
+  </body>
+</html>
+

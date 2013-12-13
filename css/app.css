@@ -1,0 +1,51 @@
+/* app css stylesheet */
+
+.menu {
+  list-style: none;
+  border-bottom: 0.1em solid black;
+  margin-bottom: 2em;
+  padding: 0 0 0.5em;
+}
+
+.menu:before {
+  content: "[";
+}
+
+.menu:after {
+  content: "]";
+}
+
+.menu > li {
+  display: inline;
+}
+
+.menu > li:before {
+  content: "|";
+  padding-right: 0.3em;
+}
+
+.menu > li:nth-child(1):before {
+  content: "";
+  padding: 0;
+}
+
+.row.display {
+  margin-bottom: 5px;
+}
+
+.row.collapse.display {
+  margin-bottom: 5px;
+}
+
+.row.movie-links {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.row.movie-links img {
+    height: 26px;
+}
+
+.footer {
+    padding: 20px 0;
+}
