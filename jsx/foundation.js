@@ -25,3 +25,15 @@ var Column = React.createClass({
     }
 });
 
+var Title = React.createClass({
+  render: function() {
+      return (
+        <div className="row">
+          <div className="small-12 columns">
+            <h1>{this.props.children}</h1>
+          </div>
+        </div>
+      );
+  }
+});
+

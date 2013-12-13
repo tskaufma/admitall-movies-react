@@ -93,16 +93,39 @@ var MoviesList = React.createClass({
   }
 });
 
-var Title = React.createClass({
-  render: function() {
-      return (
-        <div className="row">
-          <div className="small-12 columns">
-            <h1>{this.props.children}</h1>
-          </div>
-        </div>
-      );
-  }
+
+var MoviesListFilter = React.createClass({
+    getInitialState: function() {
+        return {text: ''};
+    },
+    onChange: function(e) {
+        this.setState({text: e.target.value});
+    },
+    render: function() {
+        var filteredMovies = this.props.data.filter(function(item, index) {
+            return this.state.text == '' 
+                || item.name.toLowerCase().indexOf(this.state.text.toLowerCase()) >= 0;
+        }, this);
+        return (
+            <div>
+                <Row className="collapse">
+                    <Column span="1">
+                        <span className="prefix">
+                            <i className="fi-magnifying-glass"></i>
+                        </span>
+                    </Column>
+                    <Column span="11">
+                        <input type="text" value={this.state.text} onChange={this.onChange} />
+                    </Column>
+                </Row>
+                <Row>
+                    <Column>
+                        <MoviesList data={filteredMovies} />
+                    </Column>
+                </Row>
+            </div>
+        );
+    }
 });
 
 var MoviesPage = React.createClass({
@@ -123,7 +146,7 @@ var MoviesPage = React.createClass({
         <div className="row">
           <div className="small-12 columns">
             <Title>Movie List</Title>
-            <MoviesList data={this.state.data} />
+            <MoviesListFilter data={this.state.data} />
           </div>
         </div>
       );
