@@ -93,6 +93,60 @@ var MoviesList = React.createClass({
   }
 });
 
+var MoviesListSort = React.createClass({
+    getInitialState: function() {
+        return {sortBy: 'Name', reverse: false};
+    },
+    setSort: function(e) {
+        this.setState({sortBy: e.target.dataset.value});
+        Foundation.libs.dropdown.close($('#sort-by-drop'));
+    },
+    toggleReverse: function(e) {
+        this.setState({reverse: !this.state.reverse});
+    },
+    sortByName: function(a, b) {
+        return a.name.localeCompare(b.name);
+    },
+    sortByReleaseDate: function(a, b) {
+        return a.releaseDate.localeCompare(b.releaseDate);
+    },
+    render: function() {
+        var sortedMovies = this.props.data.sort(this.state.sortBy == 'Name' ? this.sortByName : this.sortByReleaseDate);
+        if (this.state.reverse) {
+            sortedMovies.reverse();
+        }
+        return (
+            <div>
+                <Row>
+                    <Column span="6">
+                        <a className="small button dropdown" data-dropdown="sort-by-drop">
+                            Sort by {this.state.sortBy}
+                        </a>
+                        <ul id="sort-by-drop" className="f-dropdown" data-dropdown-content>
+                            <li>
+                                <a onClick={this.setSort} data-value="Name">Name</a>
+                            </li>
+                            <li>
+                                <a onClick={this.setSort} data-value="Release Date">Release Date</a>
+                            </li>
+                        </ul>
+                    </Column>
+                    <Column span="6">
+                        <a className="small button" onClick={this.toggleReverse}>
+                            {this.state.reverse ? "Descending " : "Ascending "}
+                            <i className={"fi-arrow-" + (this.state.reverse ? "down" : "up")}></i>
+                        </a>
+                    </Column>
+                </Row>
+                <Row>
+                    <Column>
+                        <MoviesList data={sortedMovies} />
+                    </Column>
+                </Row>
+            </div>
+        );
+    }
+});
 
 var MoviesListFilter = React.createClass({
     getInitialState: function() {
@@ -120,7 +174,7 @@ var MoviesListFilter = React.createClass({
                 </Row>
                 <Row>
                     <Column>
-                        <MoviesList data={filteredMovies} />
+                        <MoviesListSort data={filteredMovies} />
                     </Column>
                 </Row>
             </div>
